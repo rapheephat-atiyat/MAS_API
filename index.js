@@ -61,13 +61,13 @@ wss.on("connection", (ws) => {
                 case "MAS":
                     if (data.action == "increment") {
                         Mas.increment();
-                        Mas.increment();
+                        broadcastMASData()
                     } else if(data.action == "decrement") {
                         Mas.decrement(data.value);
-                        Mas.increment();
+                        broadcastMASData()
                     }  else if(data.action == "reset") {
                         Mas.reset();
-                        Mas.increment();
+                        broadcastMASData()
                     } else if(data.action == "conn") {
                         ws.send(JSON.stringify({ type: "MAS", message: "MAS triggered!", data: Mas.getCount() }));
                     }
