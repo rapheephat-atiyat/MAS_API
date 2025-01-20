@@ -61,13 +61,13 @@ wss.on("connection", (ws) => {
                 case "MAS":
                     if (data.action == "increment") {
                         Mas.increment();
-                        ws.send(JSON.stringify({ type: "MAS", message: "MAS triggered!", data: Mas.getCount() }));
+                        Mas.increment();
                     } else if(data.action == "decrement") {
                         Mas.decrement(data.value);
-                        ws.send(JSON.stringify({ type: "MAS", message: "MAS triggered!", data: Mas.getCount() }));
+                        Mas.increment();
                     }  else if(data.action == "reset") {
                         Mas.reset();
-                        ws.send(JSON.stringify({ type: "MAS", message: "MAS triggered!", data: 0 }));
+                        Mas.increment();
                     } else if(data.action == "conn") {
                         ws.send(JSON.stringify({ type: "MAS", message: "MAS triggered!", data: Mas.getCount() }));
                     }
@@ -80,6 +80,15 @@ wss.on("connection", (ws) => {
         }
     });
 });
+
+function broadcastMASData() {
+    const message = JSON.stringify({ type: "MAS", message: "MAS triggered!", data: Mas.getCount() });
+    wss.clients.forEach(client => {
+        if (client.readyState === client.OPEN) {
+            client.send(message);
+        }
+    });
+}
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
